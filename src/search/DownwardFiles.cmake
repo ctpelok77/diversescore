@@ -796,6 +796,7 @@ fast_downward_plugin(
     SOURCES
         diversity_score/diversity_score
         diversity_score/diversity_score_fullset
+        diversity_score/diversity_score_acyclic
         diversity_score/diversity_score_subset
         diversity_score/diversity_score_subset_bounded
         diversity_score/diversity_score_subset_optimal

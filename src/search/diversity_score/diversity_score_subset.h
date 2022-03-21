@@ -39,7 +39,6 @@ class DiversityScoreSubset : public DiversityScore {
 
     int plans_subset_size;
     bool exact_method;
-    bool dump_plans;
 
     void compute_metrics_greedy(bool stability, bool state, bool uniqueness,
             std::vector<size_t>& selected_plan_indexes);

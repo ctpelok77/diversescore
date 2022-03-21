@@ -76,6 +76,7 @@ protected:
 
     Aggregator aggregator_metric;
     bool all_metrics;
+    bool dump_plans;
 
     std::vector<std::vector<StateID>> plan_traces;
     std::vector<plan_set> plans_sets;
@@ -92,6 +93,7 @@ protected:
     float compute_score_for_set(bool stability, bool state, bool uniqueness,
             const std::vector<size_t>& selected_plan_indexes);
     void compute_metrics_exact_set();
+    void dump_acyclc_plans();
 
 public:
     DiversityScore(const options::Options &opts);

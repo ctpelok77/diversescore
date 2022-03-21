@@ -32,7 +32,8 @@ DiversityScore::DiversityScore(const Options &opts) :
         compute_stability_metric(opts.get<bool>("compute_stability_metric")),
         compute_uniqueness_metric(opts.get<bool>("compute_uniqueness_metric")),
         aggregator_metric(Aggregator(opts.get_enum("aggregator_metric"))),
-        all_metrics(opts.get<bool>("all_metrics")) 
+        all_metrics(opts.get<bool>("all_metrics")),
+        dump_plans(opts.get<bool>("dump_plans")) 
 {
 
 }
@@ -62,6 +63,33 @@ void DiversityScore::compute_metrics_exact_set() {
         cout << "Score after clustering " << cluster_score << ", cluster size " << selected_plan_indexes.size() << ", metrics " << get_metric_name(compute_stability_metric, compute_states_metric, compute_uniqueness_metric) << endl;
     }
 }
+
+void DiversityScore::dump_acyclc_plans() {
+    assert(compute_states_metric==true);
+
+    vector<size_t> selected_plan_indexes;
+    for (size_t i=0; i < _plans.size(); ++i) {
+        const vector<StateID>& plan = plan_traces[i];
+        utils::HashSet<State> plan_set;
+        bool acyclic = true;
+        for (StateID s : plan) {
+            auto it = plan_set.insert(task_proxy.convert_ancestor_state(state_registry.lookup_state(s).unpack()));
+            if (!it.second) {
+                acyclic = false;
+                break;
+            }
+        }
+        if (acyclic) {
+            selected_plan_indexes.push_back(i);
+        }
+
+    }
+    cout << "Number of acyclic plans read is " << selected_plan_indexes.size() << " out of " << _plans.size() << endl;
+    if (dump_plans) {
+        print_plans(selected_plan_indexes);
+    }
+}
+
 
 void DiversityScore::read_plans() {
     vector<Plan> plans;
@@ -535,6 +563,8 @@ void add_diversity_score_options_to_parser(OptionParser &parser) {
     parser.add_option<bool>("plans_as_multisets", "Treat plans as multisets instead of sets", "false");
     parser.add_option<bool>("use_cache", "Use cache when computing metrics", "true");
 
+    parser.add_option<bool>("dump_plans", "Dumping (subset of) plans", "false");
+
     parser.add_option<int>("cost_bound",
         "The bound on the cost of a plan",
         "-1");
@@ -548,7 +578,6 @@ void add_diversity_score_subset_options_to_parser(OptionParser &parser) {
 
     parser.add_option<bool>("exact_method", "Computing the subset using exact method, generating mip", "false");
 
-    parser.add_option<bool>("dump_plans", "Dumping (subset of) plans", "false");
 }
 
 void add_diversity_score_subset_bounded_options_to_parser(OptionParser &parser) {

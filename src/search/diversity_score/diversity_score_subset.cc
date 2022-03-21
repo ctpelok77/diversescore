@@ -21,9 +21,7 @@ using namespace std;
 
 DiversityScoreSubset::DiversityScoreSubset(const Options &opts) : DiversityScore(opts),
         plans_subset_size(opts.get<int>("plans_subset_size")),
-        exact_method(opts.get<bool>("exact_method")),
-        dump_plans(opts.get<bool>("dump_plans"))
-{
+        exact_method(opts.get<bool>("exact_method")){
 
 }
 
